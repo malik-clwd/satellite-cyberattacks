@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SAT-DEFENSE // Orbital Cyber Defense System</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600;700&family=JetBrains+Mono:wght@300;400;500;700&family=Orbitron:wght@500;700;900&display=swap" rel="stylesheet">
+</head>
+<body class="theme-space">
+  <!-- Scanline & Noise Backdrop Overlays -->
+  <div class="hud-scanlines" aria-hidden="true"></div>
+  <div class="hud-vignette" aria-hidden="true"></div>
+
+  <!-- Main Application Wrapper -->
+  <div id="app" class="dashboard-container">
+    
+    <!-- TOP HEADER / AEROSPACE HUD NAVIGATION -->
+    <header class="header-hud">
+      <div class="header-left">
+        <div class="brand-badge">
+          <div class="pulse-beacon"></div>
+          <div class="brand-title-group">
+            <h1 class="brand-title">AERO-CYBER // SAT-DEFENSE</h1>
+            <span class="brand-sub">SATELLITE CYBERATTACK SIMULATION &amp; ORBITAL DEFENSE SYSTEM</span>
+          </div>
+        </div>
+        <div class="satellite-id-pill">
+          <span class="pill-label">SATELLITE:</span>
+          <span class="pill-value">AEGIS-7 LEO (NORAD #49281)</span>
+        </div>
+      </div>
+
+      <div class="header-center">
+        <!-- Master Threat Status Indicator -->
+        <div id="masterStatusBadge" class="status-badge state-secure">
+          <span class="status-dot"></span>
+          <span id="masterStatusText" class="status-text">NORMAL // SECURE</span>
+        </div>
+      </div>
+
+      <div class="header-right">
+        <div class="hud-metric">
+          <span class="metric-title">MISSION CLOCK (UTC)</span>
+          <span id="utcClock" class="metric-value font-mono">00:00:00 UTC</span>
+        </div>
+        <div class="hud-metric">
+          <span class="metric-title">SIM ELAPSED (MET)</span>
+          <span id="missionElapsed" class="metric-value font-mono">T+ 00:00:00</span>
+        </div>
+        <div class="hud-metric">
+          <span class="metric-title">GROUND STATION</span>
+          <span id="groundStationName" class="metric-value font-mono highlight-cyan">MADRID-DSN (34m)</span>
+        </div>
+        <div class="header-actions">
+          <button id="btnAudioToggle" class="btn-icon" title="Toggle Aerospace Sound FX">
+            <span id="audioIcon">🔊</span>
+            <span class="tooltip">Audio FX</span>
+          </button>
+          <button id="btnAutoDemo" class="btn-hud-action btn-hud-demo" title="Run 5-Step Guided Classroom Demonstration">
+            ▶️ Live Demo Flow
+          </button>
+          <button id="btnDemoGuide" class="btn-hud-action" title="Open 5-Mark Presentation & Viva Guide">
+            🎓 Viva / Demo Guide
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Interactive 5-Step Viva Presentation Floating Controller -->
+    <div id="vivaGuidedBar" class="viva-guided-bar guided-hidden">
+      <div class="guided-header">
+        <div class="guided-title-group">
+          <span class="guided-badge">VIVA EVALUATION WORKFLOW</span>
+          <span class="guided-title">5-Mark Classroom Project Demonstration Runner</span>
+        </div>
+        <button id="btnCloseGuided" class="btn-guided-close" title="Close Flow">✕</button>
+      </div>
+      <div class="guided-steps font-mono">
+        <button class="step-btn active" data-step="1">1. Baseline Normal</button>
+        <button class="step-btn" data-step="2">2. Trigger Attack</button>
+        <button class="step-btn" data-step="3">3. Anomaly Logs</button>
+        <button class="step-btn" data-step="4">4. Deploy Defense</button>
+        <button class="step-btn" data-step="5">5. Before &amp; After</button>
+        <button id="btnAutoStepNext" class="step-btn btn-auto-run">⏩ Next Step</button>
+      </div>
+      <div id="guidedPromptText" class="guided-prompt-text font-mono">
+        <strong>Step 1 (1 Mark):</strong> Demonstrating nominal circular LEO orbit (green ellipse, 550 km altitude, 7.59 km/s orbital speed) and 100% healthy telemetry.
+      </div>
+    </div>
+
+    <!-- MAIN DASHBOARD CONTENT AREA -->
+    <main class="dashboard-body">
+      
+      <!-- LEFT COLUMN: LIVE TELEMETRY & AVIONICS -->
+      <aside class="panel panel-left">
+        
+        <!-- Ephemeris & Orbital Mechanics -->
+        <div class="card card-telemetry">
+          <div class="card-header">
+            <div class="card-title-group">
+              <span class="card-icon">🛰️</span>
+              <h2 class="card-title">ORBITAL EPHEMERIS (ECI)</h2>
+            </div>
+            <span class="card-tag font-mono">LIVE GNC</span>
+          </div>
+          <div class="card-body">
+            <div class="grid-2col font-mono">
+              <div class="telemetry-item">
+                <span class="label">X COORD</span>
+                <span id="valPosX" class="val-number">+4,218.42 km</span>
+              </div>
+              <div class="telemetry-item">
+                <span class="label">Y COORD</span>
+                <span id="valPosY" class="val-number">-5,102.18 km</span>
+              </div>
+              <div class="telemetry-item">
+                <span class="label">Z COORD</span>
+                <span id="valPosZ" class="val-number">+2,840.67 km</span>
+              </div>
+              <div class="telemetry-item">
+                <span class="label">ALTITUDE</span>
+                <span id="valAltitude" class="val-number highlight-cyan">552.40 km</span>
+              </div>
+              <div class="telemetry-item">
+                <span class="label">ORBIT VELOCITY</span>
+                <span id="valVelocity" class="val-number highlight-cyan">7.592 km/s</span>
+              </div>
+              <div class="telemetry-item">
+                <span class="label">ORBIT PERIOD</span>
+                <span id="valPeriod" class="val-number">95.64 min</span>
+              </div>
+            </div>
+            
+            <div class="progress-bar-group">
+              <div class="bar-header">
+                <span>ORBIT COMPLETION (TRUE ANOMALY)</span>
+                <span id="valTrueAnomaly" class="font-mono">142.8°</span>
+              </div>
+              <div class="progress-track">
+                <div id="barOrbitProgress" class="progress-fill fill-green" style="width: 40%;"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Geodetic Coordinates & Ground Track -->
+        <div class="card card-telemetry">
+          <div class="card-header">
+            <div class="card-title-group">
+              <span class="card-icon">🌍</span>
+              <h2 class="card-title">GEODETIC POSITION &amp; COMMS</h2>
+            </div>
+            <span id="commsBadge" class="badge badge-green font-mono">CARRIER LOCKED</span>
+          </div>
+          <div class="card-body">
+            <div class="grid-2col font-mono">
+              <div class="telemetry-item">
+                <span class="label">LATITUDE</span>
+                <span id="valLatitude" class="val-number">28.5721° N</span>
+              </div>
+              <div class="telemetry-item">
+                <span class="label">LONGITUDE</span>
+                <span id="valLongitude" class="val-number">-80.6480° W</span>
+              </div>
+              <div class="telemetry-item">
+                <span class="label">SIGNAL STRENGTH (SNR)</span>
+                <span id="valSignalStrength" class="val-number highlight-green">24.8 dB (99%)</span>
+              </div>
+              <div class="telemetry-item">
+                <span class="label">PACKET LOSS</span>
+                <span id="valPacketLoss" class="val-number">0.00 %</span>
+              </div>
+              <div class="telemetry-item">
+                <span class="label">LINK FREQUENCY</span>
+                <span id="valFrequency" class="val-number">2,287.50 MHz</span>
+              </div>
+              <div class="telemetry-item">
+                <span class="label">COMM STATUS</span>
+                <span id="valCommStatus" class="val-number highlight-green">ONLINE / NOMINAL</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Subsystem Avionics Health -->
+        <div class="card card-telemetry">
+          <div class="card-header">
+            <div class="card-title-group">
+              <span class="card-icon">⚡</span>
+              <h2 class="card-title">SATELLITE AVIONICS HEALTH</h2>
+            </div>
+            <span id="healthBadge" class="badge badge-green font-mono">100% HEALTH</span>
+          </div>
+          <div class="card-body">
+            <div class="subsystem-bars">
+              <div class="subsystem-row">
+                <div class="subsystem-label-group">
+                  <span class="subsystem-name">BATTERY STATE (Li-Ion)</span>
+                  <span id="valBattery" class="subsystem-val font-mono">94.2% (28.4V)</span>
+                </div>
+                <div class="progress-track">
+                  <div id="barBattery" class="progress-fill fill-green" style="width: 94%;"></div>
+                </div>
+              </div>
+
+              <div class="subsystem-row">
+                <div class="subsystem-label-group">
+                  <span class="subsystem-name">SOLAR ARRAY HARVEST</span>
+                  <span id="valSolar" class="subsystem-val font-mono">1,480 W (SUN-FACING)</span>
+                </div>
+                <div class="progress-track">
+                  <div id="barSolar" class="progress-fill fill-cyan" style="width: 88%;"></div>
+                </div>
+              </div>
+
+              <div class="subsystem-row">
+                <div class="subsystem-label-group">
+                  <span class="subsystem-name">OBC CPU TEMPERATURE</span>
+                  <span id="valCpuTemp" class="subsystem-val font-mono">31.4 °C</span>
+                </div>
+                <div class="progress-track">
+                  <div id="barCpuTemp" class="progress-fill fill-green" style="width: 32%;"></div>
+                </div>
+              </div>
+
+              <div class="subsystem-row">
+                <div class="subsystem-label-group">
+                  <span class="subsystem-name">ATTITUDE / GYRO RATE</span>
+                  <span id="valAttitudeRate" class="subsystem-val font-mono">0.02 °/s (LOCKED)</span>
+                </div>
+                <div class="progress-track">
+                  <div id="barAttitudeRate" class="progress-fill fill-green" style="width: 5%;"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Real-Time Telemetry Trend Chart -->
+        <div class="card card-chart">
+          <div class="card-header">
+            <div class="card-title-group">
+              <span class="card-icon">📈</span>
+              <h2 class="card-title">TELEMETRY REAL-TIME GRAPH</h2>
+            </div>
+            <div class="chart-stream-select">
+              <button class="btn-chart-tag active" data-chart="alt">Altitude</button>
+              <button class="btn-chart-tag" data-chart="vel">Velocity</button>
+              <button class="btn-chart-tag" data-chart="snr">RF SNR</button>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="canvas-chart-wrapper">
+              <canvas id="telemetryChartCanvas" width="400" height="110"></canvas>
+            </div>
+            <div class="chart-footer-legend font-mono">
+              <span class="legend-item"><span class="legend-box box-green"></span> Baseline Nominal</span>
+              <span class="legend-item"><span class="legend-box box-cyan"></span> Live Stream</span>
+              <span class="legend-item"><span class="legend-box box-red"></span> Anomaly Delta</span>
+            </div>
+          </div>
+        </div>
+
+      </aside>
+
+      <!-- CENTER COLUMN: ORBITAL SIMULATION THEATER -->
+      <section class="panel panel-center">
+        
+        <!-- Canvas Simulation Viewport -->
+        <div class="simulation-viewport-container">
+          
+          <!-- Tactical HUD Canvas Overlays -->
+          <div class="sim-overlay-top">
+            <div class="sim-hud-badge">
+              <span class="dot-live"></span>
+              <span class="hud-text">ORBITAL VIEW: LEO EQUATORIAL / INCLINED (i=51.6°)</span>
+            </div>
+            <div id="simAlertBanner" class="sim-alert-banner alert-hidden">
+              <span class="alert-icon">⚠️</span>
+              <span id="simAlertMessage">ATTACK DETECTED: UNAUTHORIZED TRAJECTORY BURNING</span>
+            </div>
+            <div class="sim-hud-status">
+              <span class="label">ORBIT STATUS:</span>
+              <span id="valOrbitStatusText" class="val-highlight highlight-green">NOMINAL KEPLERIAN</span>
+            </div>
+          </div>
+
+          <!-- THE MAIN CANVAS -->
+          <canvas id="orbitalCanvas" class="main-canvas"></canvas>
+
+          <!-- Canvas Compass / Telemetry Watermark -->
+          <div class="sim-watermark-bottom-left font-mono">
+            <div>FRAME: EARTH-CENTERED INERTIAL (J2000)</div>
+            <div>PERIGEE: 540 km | APOGEE: 565 km</div>
+            <div id="simDeltaVNotice" class="text-dim">DELTA-V EXPENDITURE: 0.0 m/s</div>
+          </div>
+
+          <!-- Canvas Legend Overlay -->
+          <div class="sim-legend-overlay font-mono">
+            <div class="legend-row">
+              <span class="line-swatch swatch-green"></span>
+              <span>Nominal Orbit</span>
+            </div>
+            <div id="legendCompromisedRow" class="legend-row legend-inactive">
+              <span class="line-swatch swatch-red"></span>
+              <span>Compromised Orbit</span>
+            </div>
+            <div id="legendGhostRow" class="legend-row legend-inactive">
+              <span class="line-swatch swatch-ghost"></span>
+              <span>Spoofed Ghost Nav</span>
+            </div>
+            <div class="legend-row">
+              <span class="line-swatch swatch-beam"></span>
+              <span>RF Telemetry Link</span>
+            </div>
+          </div>
+
+          <!-- Interactive Simulation Controls Bar -->
+          <div class="sim-controls-bar">
+            <div class="controls-group">
+              <button id="btnPlayPause" class="btn-control" title="Play or Pause Orbit Simulation">
+                <span id="playPauseIcon">⏸️</span>
+                <span id="playPauseText">Pause</span>
+              </button>
+              <button id="btnResetSim" class="btn-control" title="Reset Simulation Position">
+                🔄 Reset Sim
+              </button>
+            </div>
+
+            <div class="controls-divider"></div>
+
+            <div class="controls-group">
+              <span class="controls-label">SPEED:</span>
+              <button class="btn-speed active" data-speed="1">1x</button>
+              <button class="btn-speed" data-speed="2">2x</button>
+              <button class="btn-speed" data-speed="5">5x</button>
+            </div>
+
+            <div class="controls-divider"></div>
+
+            <div class="controls-group">
+              <span class="controls-label">CAMERA:</span>
+              <button class="btn-camera active" data-cam="orbital">Full Orbit</button>
+              <button class="btn-camera" data-cam="earth">Earth Focus</button>
+              <button class="btn-camera" data-cam="satellite">Chaser Sat</button>
+            </div>
+
+            <div class="controls-divider"></div>
+
+            <div class="controls-group">
+              <label class="toggle-control" title="Show Ground Station Beam">
+                <input type="checkbox" id="toggleBeam" checked>
+                <span class="toggle-slider"></span>
+                <span class="toggle-label">RF Beam</span>
+              </label>
+              <label class="toggle-control" title="Show Orbit Debris / Particles">
+                <input type="checkbox" id="toggleStars" checked>
+                <span class="toggle-slider"></span>
+                <span class="toggle-label">Deep Space</span>
+              </label>
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- RIGHT COLUMN: CYBERATTACK SIMULATION & DEFENSE RECOVERY -->
+      <aside class="panel panel-right">
+        
+        <!-- Cyber Warfare Control Module -->
+        <div class="card card-cyber-ops">
+          <div class="card-header">
+            <div class="card-title-group">
+              <span class="card-icon">⚡</span>
+              <h2 class="card-title">CYBERATTACK CONTROLLER</h2>
+            </div>
+            <span class="badge badge-red font-mono">SIMULATED VECTORS</span>
+          </div>
+          <div class="card-body">
+            
+            <!-- Attack Dropdown Selector -->
+            <div class="form-group">
+              <label for="attackSelect" class="form-label">
+                SELECT CYBERATTACK VECTOR:
+              </label>
+              <div class="select-wrapper">
+                <select id="attackSelect" class="cyber-select font-mono">
+                  <option value="1">1. Trajectory Manipulation Attack (Thruster Hijack)</option>
+                  <option value="2">2. GPS Spoofing Attack (False GNSS Nav Ephemeris)</option>
+                  <option value="3">3. Telemetry Data Manipulation (FDI / Bit-Flipping)</option>
+                  <option value="4">4. Communication Jamming (RF Link Flooding)</option>
+                  <option value="5">5. Command Injection (Unauthorized Telecommand)</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="action-buttons-stack">
+              <button id="btnLaunchAttack" class="btn-action btn-attack">
+                <span class="btn-glow"></span>
+                <span class="btn-icon">⚡</span>
+                <span class="btn-title">LAUNCH SIMULATED ATTACK</span>
+                <span class="btn-subtext">INJECT SELECTED CYBERATTACK VECTOR</span>
+              </button>
+
+              <button id="btnActivateDefense" class="btn-action btn-defense">
+                <span class="btn-glow"></span>
+                <span class="btn-icon">🛡️</span>
+                <span class="btn-title">ACTIVATE DEFENSE SYSTEM</span>
+                <span class="btn-subtext">EXECUTE AUTONOMOUS MITIGATION &amp; RECOVERY</span>
+              </button>
+
+              <button id="btnResetNormal" class="btn-action btn-reset">
+                <span class="btn-icon">🔄</span>
+                <span class="btn-title">RESET TO NORMAL</span>
+                <span class="btn-subtext">RESTORE ORIGINAL SATELLITE TELEMETRY &amp; ORBIT</span>
+              </button>
+            </div>
+
+            <!-- Active Attack Info Card -->
+            <div id="attackInfoCard" class="attack-info-box">
+              <div class="info-header">
+                <span class="info-tag">ATTACK PROFILE</span>
+                <span id="infoAttackTarget" class="info-subsystem font-mono">TARGET: PROPULSION &amp; GNC</span>
+              </div>
+              <h3 id="infoAttackTitle" class="info-name">Trajectory Manipulation Attack</h3>
+              <p id="infoAttackDescription" class="info-description">
+                Simulates unauthorized uplink telecommands executing rogue delta-V thruster burns. The satellite deviates from its safe orbital corridor into an unstable high-drag or decay trajectory.
+              </p>
+              <div class="info-metadata font-mono">
+                <div><span class="meta-label">SEVERITY:</span> <span id="infoAttackSeverity" class="severity-critical">CRITICAL (CAT 1)</span></div>
+                <div><span class="meta-label">VULNERABILITY:</span> <span id="infoAttackVuln">Unauthenticated Uplink (CCSDS Replay)</span></div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Defense & Anomaly Logs -->
+        <div class="card card-logs">
+          <div class="card-header">
+            <div class="card-title-group">
+              <span class="card-icon">📜</span>
+              <h2 class="card-title">DEFENSE &amp; IDS EVENT LOG</h2>
+            </div>
+            <div class="log-actions">
+              <span id="logCountBadge" class="badge-counter font-mono">0 EVENTS</span>
+              <button id="btnClearLogs" class="btn-text-action font-mono">Clear</button>
+            </div>
+          </div>
+          <div class="card-body">
+            <!-- Filter chips -->
+            <div class="log-filter-bar">
+              <button class="filter-chip active" data-filter="all">ALL</button>
+              <button class="filter-chip" data-filter="threat">THREATS</button>
+              <button class="filter-chip" data-filter="defense">DEFENSE</button>
+              <button class="filter-chip" data-filter="system">SYSTEM</button>
+            </div>
+            
+            <!-- Scrollable Log Container -->
+            <div id="defenseLogContainer" class="log-terminal font-mono">
+              <!-- Dynamically populated entries -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Defense Pipeline Status Tracker -->
+        <div class="card card-status-matrix">
+          <div class="card-header">
+            <div class="card-title-group">
+              <span class="card-icon">🛡️</span>
+              <h2 class="card-title">CYBER DEFENSE POSTURE</h2>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="status-pipeline font-mono">
+              <div id="stepThreatStatus" class="pipeline-step step-nominal">
+                <div class="step-indicator">1</div>
+                <div class="step-info">
+                  <div class="step-title">ATTACK STATUS</div>
+                  <div id="statAttackValue" class="step-desc">NONE (STANDBY)</div>
+                </div>
+              </div>
+
+              <div id="stepDetectionStatus" class="pipeline-step step-nominal">
+                <div class="step-indicator">2</div>
+                <div class="step-info">
+                  <div class="step-title">IDS DETECTION</div>
+                  <div id="statDetectionValue" class="step-desc">CONTINUOUS MONITOR</div>
+                </div>
+              </div>
+
+              <div id="stepRecoveryStatus" class="pipeline-step step-nominal">
+                <div class="step-indicator">3</div>
+                <div class="step-info">
+                  <div class="step-title">RECOVERY STATUS</div>
+                  <div id="statRecoveryValue" class="step-desc">SYSTEM READY</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </aside>
+
+    </main>
+
+    <!-- LOWER SECTION: BEFORE-AND-AFTER COMPARISON & EDUCATIONAL SUITE -->
+    <footer class="dashboard-footer">
+      
+      <!-- Tab Navigation -->
+      <nav class="footer-tab-nav">
+        <button class="tab-btn active" data-tab="tabComparison">
+          ⚖️ BEFORE-AND-AFTER COMPARISON
+        </button>
+        <button class="tab-btn" data-tab="tabSubsystems">
+          🔬 SUBSYSTEM TELEMETRY INSPECTOR
+        </button>
+        <button class="tab-btn" data-tab="tabThreatIntel">
+          🛰️ AEROSPACE THREAT INTEL &amp; CCSDS THEORY
+        </button>
+        <button class="tab-btn" data-tab="tabVivaGuide">
+          🎓 CLASSROOM DEMO &amp; 5-MARK VIVA GUIDE
+        </button>
+      </nav>
+
+      <!-- TAB 1: BEFORE-AND-AFTER COMPARISON PANEL -->
+      <div id="tabComparison" class="tab-content active">
+        <div class="comparison-grid">
+          
+          <!-- Column 1: Orbit Comparison -->
+          <div class="comparison-card">
+            <div class="comp-header">
+              <span class="comp-badge">TRAJECTORY</span>
+              <h3>ORBITAL PATH &amp; DYNAMICS</h3>
+            </div>
+            <div class="comp-body font-mono">
+              <div class="comp-row nominal-row">
+                <span class="metric-label">Nominal Orbit:</span>
+                <span id="cmpNominalOrbit">Circular LEO (550 km), Ecc: 0.0012, Safe</span>
+              </div>
+              <div class="comp-row altered-row">
+                <span class="metric-label">Altered Orbit:</span>
+                <span id="cmpAlteredOrbit">No deviation detected (Green path nominal)</span>
+              </div>
+              <div class="comp-delta" id="cmpOrbitDelta">
+                <span>DELTA:</span> <span class="delta-val">0.0 km trajectory perturbation</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Column 2: Coordinate Comparison -->
+          <div class="comparison-card">
+            <div class="comp-header">
+              <span class="comp-badge">GNSS / GNC</span>
+              <h3>COORDINATES: ACTUAL VS REPORTED</h3>
+            </div>
+            <div class="comp-body font-mono">
+              <div class="comp-row nominal-row">
+                <span class="metric-label">Actual True Position:</span>
+                <span id="cmpActualCoords">Lat: 28.57° N, Lon: -80.65° W, Alt: 552.4 km</span>
+              </div>
+              <div class="comp-row altered-row">
+                <span class="metric-label">Reported / Spoofed:</span>
+                <span id="cmpReportedCoords">Lat: 28.57° N, Lon: -80.65° W, Alt: 552.4 km</span>
+              </div>
+              <div class="comp-delta" id="cmpCoordsDelta">
+                <span>SPOOFING BIAS:</span> <span class="delta-val">0.00 km (Perfect Alignment)</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Column 3: Telemetry Data Integrity -->
+          <div class="comparison-card">
+            <div class="comp-header">
+              <span class="comp-badge">AVIONICS</span>
+              <h3>GENUINE VS MANIPULATED TELEMETRY</h3>
+            </div>
+            <div class="comp-body font-mono">
+              <div class="comp-row nominal-row">
+                <span class="metric-label">Genuine Sensor Bus:</span>
+                <span id="cmpGenuineTelem">Batt: 94.2%, Temp: 31.4°C, Vel: 7.59 km/s</span>
+              </div>
+              <div class="comp-row altered-row">
+                <span class="metric-label">Received Downlink:</span>
+                <span id="cmpManipulatedTelem">Batt: 94.2%, Temp: 31.4°C, Vel: 7.59 km/s</span>
+              </div>
+              <div class="comp-delta" id="cmpTelemDelta">
+                <span>INTEGRITY STATUS:</span> <span class="delta-val highlight-green">PARITY VALIDATED (CRC OK)</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Column 4: Comms Link Status -->
+          <div class="comparison-card">
+            <div class="comp-header">
+              <span class="comp-badge">RF COMMS</span>
+              <h3>NORMAL VS COMPROMISED LINK</h3>
+            </div>
+            <div class="comp-body font-mono">
+              <div class="comp-row nominal-row">
+                <span class="metric-label">Nominal RF Link:</span>
+                <span id="cmpNominalComm">SNR: 24.8 dB, Loss: 0.00%, Uplink Secure</span>
+              </div>
+              <div class="comp-row altered-row">
+                <span class="metric-label">Current RF Link:</span>
+                <span id="cmpCurrentComm">SNR: 24.8 dB, Loss: 0.00%, Link Active</span>
+              </div>
+              <div class="comp-delta" id="cmpCommDelta">
+                <span>LINK ATTENUATION:</span> <span class="delta-val">0 dB Jamming Noise</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Column 5: Defense Outcome (Attack Detected vs Prevented) -->
+          <div class="comparison-card">
+            <div class="comp-header">
+              <span class="comp-badge">CYBER DEFENSE</span>
+              <h3>ATTACK DETECTED VS PREVENTED</h3>
+            </div>
+            <div class="comp-body font-mono">
+              <div class="comp-row nominal-row">
+                <span class="metric-label">IDS Threat Detection:</span>
+                <span id="cmpThreatDetected">Continuous Heuristic &amp; Residual Monitoring (0 Flags)</span>
+              </div>
+              <div class="comp-row altered-row">
+                <span class="metric-label">Countermeasure Prevention:</span>
+                <span id="cmpThreatPrevented">Autonomous Defense Ready (CCSDS SDLS + MPU Armed)</span>
+              </div>
+              <div class="comp-delta" id="cmpDefenseDelta">
+                <span>POSTURE:</span> <span class="delta-val highlight-green">SYSTEM HARDENED &amp; SECURED</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- TAB 2: SUBSYSTEM ANOMALY INSPECTOR -->
+      <div id="tabSubsystems" class="tab-content">
+        <div class="subsystems-detail-grid font-mono">
+          <div class="sub-card">
+            <h4>🛰️ ATTITUDE DETERMINATION &amp; CONTROL (ADCS)</h4>
+            <div class="sub-stat-row"><span>Reaction Wheel 1:</span> <span class="stat-highlight">2,410 RPM</span></div>
+            <div class="sub-stat-row"><span>Reaction Wheel 2:</span> <span class="stat-highlight">2,390 RPM</span></div>
+            <div class="sub-stat-row"><span>Star Tracker #1:</span> <span class="stat-highlight">LOCKED (62 Stars)</span></div>
+            <div class="sub-stat-row"><span>Magnetic Torquers:</span> <span class="stat-highlight">STANDBY</span></div>
+            <div class="sub-stat-row"><span>Attitude State:</span> <span id="adcsStatusText" class="highlight-green">NADIR POINTING (STABLE)</span></div>
+          </div>
+
+          <div class="sub-card">
+            <h4>⚡ ELECTRICAL POWER SYSTEM (EPS)</h4>
+            <div class="sub-stat-row"><span>Bus Voltage:</span> <span class="stat-highlight">28.4 V DC</span></div>
+            <div class="sub-stat-row"><span>Solar Array Wing +Y:</span> <span class="stat-highlight">740 W</span></div>
+            <div class="sub-stat-row"><span>Solar Array Wing -Y:</span> <span class="stat-highlight">740 W</span></div>
+            <div class="sub-stat-row"><span>Power Consumption:</span> <span class="stat-highlight">385 W (Payload Active)</span></div>
+            <div class="sub-stat-row"><span>EPS Safe Mode:</span> <span id="epsStatusText" class="highlight-green">DISENGAGED (NOMINAL)</span></div>
+          </div>
+
+          <div class="sub-card">
+            <h4>📡 TELECOMMAND &amp; TELEMETRY (TT&amp;C)</h4>
+            <div class="sub-stat-row"><span>CCSDS Protocol:</span> <span class="stat-highlight">CCSDS 133.0-B-1</span></div>
+            <div class="sub-stat-row"><span>Encryption Level:</span> <span id="ttcCryptoText" class="highlight-green">AES-256-GCM SDLS</span></div>
+            <div class="sub-stat-row"><span>Uplink Carrier Lock:</span> <span class="stat-highlight">LOCKED (-82 dBm)</span></div>
+            <div class="sub-stat-row"><span>Command Buffer:</span> <span id="ttcBufferText" class="stat-highlight">0 UNVERIFIED FRAMES</span></div>
+            <div class="sub-stat-row"><span>Anti-Jamming (FHSS):</span> <span id="ttcFhssText" class="stat-highlight">STANDBY (50 hops/s)</span></div>
+          </div>
+
+          <div class="sub-card">
+            <h4>🛡️ AUTONOMOUS KALMAN FILTER IDS</h4>
+            <div class="sub-stat-row"><span>GNC Innovation Residual:</span> <span id="kfResidual" class="stat-highlight">0.012 (Threshold: 0.85)</span></div>
+            <div class="sub-stat-row"><span>Dynamic Consistency:</span> <span id="kfConsistency" class="highlight-green">99.8% CONVERGENT</span></div>
+            <div class="sub-stat-row"><span>Telemetry Checksum:</span> <span id="kfCrc" class="highlight-green">CRC-32 PASS</span></div>
+            <div class="sub-stat-row"><span>Watchdog ROM Hash:</span> <span class="stat-highlight">0xA93E...VERIFIED</span></div>
+            <div class="sub-stat-row"><span>Threat Isolation:</span> <span id="kfIsolation" class="highlight-green">ZERO INTRUSION</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 3: AEROSPACE THREAT INTEL & CCSDS THEORY -->
+      <div id="tabThreatIntel" class="tab-content">
+        <div class="threat-intel-container">
+          <div class="intel-card">
+            <div class="intel-badge">ATTACK 1</div>
+            <h3>Trajectory Manipulation (Orbital Hijacking)</h3>
+            <p><strong>Vector:</strong> Exploitation of unauthenticated telecommand uplinks or compromised ground station keys to fire on-board chemical/electric thrusters.</p>
+            <p><strong>Consequences:</strong> Satellite is pushed out of its allocated orbital slot, creating collision hazards in Low Earth Orbit (Kessler syndrome) or inducing premature atmospheric burn-up.</p>
+            <p><strong>Mitigation:</strong> CCSDS Space Data Link Security (SDLS) authentication with HMAC-SHA256, command threshold limits, and autonomous station-keeping reversion.</p>
+          </div>
+
+          <div class="intel-card">
+            <div class="intel-badge">ATTACK 2</div>
+            <h3>GPS / GNSS Spoofing (Position Falsification)</h3>
+            <p><strong>Vector:</strong> High-power false L1/L2 GNSS signals broadcast toward the satellite's receiver antenna, overpowering real GPS constellations with slightly altered timing delays.</p>
+            <p><strong>Consequences:</strong> The satellite's onboard GNC calculates invalid position fixes, misdirecting earth-observation payloads and satellite crosslinks.</p>
+            <p><strong>Mitigation:</strong> Multi-constellation GNSS receiver (GPS + Galileo), Receiver Autonomous Integrity Monitoring (RAIM), and cross-verification using optical Star Trackers.</p>
+          </div>
+
+          <div class="intel-card">
+            <div class="intel-badge">ATTACK 3</div>
+            <h3>Telemetry Data Manipulation (False Data Injection)</h3>
+            <p><strong>Vector:</strong> Man-in-the-Middle (MitM) interception on downlink signals or compromised ground network routing servers alter telemetry values before presentation.</p>
+            <p><strong>Consequences:</strong> Ground operators are tricked into issuing incorrect emergency commands (e.g., shutting down payloads believing battery is drained or CPU is overheating).</p>
+            <p><strong>Mitigation:</strong> End-to-end cryptographic telemetry packet signatures, sensor fusion consistency checks, and Kalman filter innovation testing.</p>
+          </div>
+
+          <div class="intel-card">
+            <div class="intel-badge">ATTACK 4</div>
+            <h3>RF Communication Jamming (Denial of Service)</h3>
+            <p><strong>Vector:</strong> Ground or airborne electronic warfare transmitters flood the satellite's uplink receiver frequency with high-power Gaussian noise or chirp carriers.</p>
+            <p><strong>Consequences:</strong> Complete loss of ground telemetry and command capabilities. Satellite drifts uncontrolled during critical mission phases.</p>
+            <p><strong>Mitigation:</strong> Frequency Hopping Spread Spectrum (FHSS), Direct Sequence Spread Spectrum (DSSS), spatial null-steering antennas, and autonomous inter-satellite laser relays.</p>
+          </div>
+
+          <div class="intel-card">
+            <div class="intel-badge">ATTACK 5</div>
+            <h3>Command Injection (Buffer Overflow &amp; Firmware Tamper)</h3>
+            <p><strong>Vector:</strong> Exploitation of memory corruption vulnerabilities in flight software telecommand decoders to execute arbitrary payload firmware.</p>
+            <p><strong>Consequences:</strong> Malicious actors can command reaction wheels to desaturate at max RPM, inducing violent tumble, or slew solar arrays away from sunlight to kill power.</p>
+            <p><strong>Mitigation:</strong> Hardware-enforced Memory Protection Units (MPU), golden image bootloader rollback, and command authorization two-party rule.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 4: CLASSROOM DEMO & 5-MARK VIVA GUIDE -->
+      <div id="tabVivaGuide" class="tab-content">
+        <div class="viva-guide-container">
+          <div class="viva-banner">
+            <h3>🎓 5-MARK COLLEGE PROJECT PRESENTATION RUBRIC &amp; DEMONSTRATION WORKFLOW</h3>
+            <p>Follow this exact structured sequence during your project evaluation to demonstrate maximum technical rigor and earn full marks.</p>
+          </div>
+
+          <div class="viva-steps-grid">
+            <div class="viva-step-card">
+              <div class="step-num">STEP 1 (1 Mark)</div>
+              <h4>Nominal Orbital Baseline</h4>
+              <p>Show the professor the green baseline orbit, explain Keplerian circular orbit mechanics ($v = \sqrt{GM/r} \approx 7.6 \text{ km/s}$ at 550 km altitude), show live X/Y/Z telemetry and 100% health status.</p>
+            </div>
+
+            <div class="viva-step-card">
+              <div class="step-num">STEP 2 (1 Mark)</div>
+              <h4>Trigger Cyberattack</h4>
+              <p>Select an attack (e.g. <em>Trajectory Hijack</em> or <em>GPS Spoofing</em>) and click <strong>LAUNCH SIMULATED ATTACK</strong>. Point out the animated thruster exhaust, red altered orbit, warning klaxons, and diverging telemetry.</p>
+            </div>
+
+            <div class="viva-step-card">
+              <div class="step-num">STEP 3 (1 Mark)</div>
+              <h4>Demonstrate Anomaly Detection</h4>
+              <p>Highlight the Defense Log and Subsystem Inspector. Point out the Kalman Filter innovation residual spike and the IDS alert triggered by unverified telecommands.</p>
+            </div>
+
+            <div class="viva-step-card">
+              <div class="step-num">STEP 4 (1 Mark)</div>
+              <h4>Activate Cyber Defense</h4>
+              <p>Click <strong>ACTIVATE DEFENSE SYSTEM</strong>. Point out the glowing cyber-shield around the satellite, autonomous station-keeping retro-burns, cryptographic re-authentication, and telemetry restoration.</p>
+            </div>
+
+            <div class="viva-step-card">
+              <div class="step-num">STEP 5 (1 Mark)</div>
+              <h4>Before-and-After Analysis</h4>
+              <p>Switch to the <em>Before-and-After Comparison</em> panel. Explain the mathematical delta between genuine vs spoofed parameters, proving full system recovery without restarting.</p>
+            </div>
+          </div>
+
+          <div class="viva-qa-box font-mono">
+            <h4>💡 COMMON VIVA QUESTIONS &amp; MODEL ANSWERS</h4>
+            <div class="qa-item">
+              <p class="qa-q">Q: What is the difference between Jamming and Spoofing?</p>
+              <p class="qa-a">A: <strong>Jamming</strong> is a Denial-of-Service attack flooding the RF channel with noise so no communication gets through. <strong>Spoofing</strong> is an integrity attack broadcasting forged valid-looking navigation signals that mislead the receiver's computed position without alerting it to packet loss.</p>
+            </div>
+            <div class="qa-item">
+              <p class="qa-q">Q: Why did you choose CCSDS standards for the aerospace simulation?</p>
+              <p class="qa-a">A: CCSDS (Consultative Committee for Space Data Systems) is the international standard governing telemetry and telecommands used by NASA, ESA, ISRO, and commercial space operators worldwide.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </footer>
+
+  </div>
+
+  <!-- JavaScript Modules -->
+  <script src="js/audio-effects.js"></script>
+  <script src="js/orbital-simulation.js"></script>
+  <script src="js/telemetry-engine.js"></script>
+  <script src="js/attack-defense-engine.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>
